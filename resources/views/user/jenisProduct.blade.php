@@ -159,7 +159,7 @@
                         $('#loading-overlay').show();
                         $.ajax({
                             type: "POST",
-                            url: "{{ url('v1/4a3f479a-eb2e-498f-aa7b-e7d6e3f0c5f3/pendaftaran/update/') }}/" +
+                            url: "{{ url('api/v1/jenisproduct/update/') }}/" +
                                 id,
                             data: formData,
                             dataType: 'json',
@@ -311,6 +311,62 @@
                     $('.modal-title').text('Tambah Data');
                     $('.modal-footer button[type="submit"]').text('Submit');
                 });
+            });
+        });
+
+
+        //delete
+        $(document).on('click', '.delete-confirm', function(e) {
+            e.preventDefault();
+            var id = $(this).data('id');
+            Swal.fire({
+                title: 'Anda yakin ingin menghapus data ini?',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Ya, Delete',
+                cancelButtonText: 'Cancel',
+                resolveButton: true
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $.ajax({
+                        url: `{{ url('api/v1/jenisproduct/delete') }}/` +
+                            id,
+                        type: 'DELETE',
+                        data: {
+                            "_token": "{{ csrf_token() }}",
+                            "id": id
+                        },
+                        success: function(response) {
+                            if (response.message === 'success delete data') {
+                                Swal.fire({
+                                    title: 'Data berhasil dihapus',
+                                    icon: 'success',
+                                    timer: 5000,
+                                    showConfirmButton: true
+                                }).then((result) => {
+                                    location.reload();
+                                });
+                            } else {
+                                Swal.fire({
+                                    title: 'Gagal menghapus data',
+                                    text: response.message,
+                                    icon: 'error',
+                                    timer: 5000,
+                                    showConfirmButton: true
+                                });
+                            }
+                        },
+                        error: function() {
+                            Swal.fire({
+                                title: 'Terjadi kesalahan',
+                                text: 'Gagal menghapus data',
+                                icon: 'error',
+                                timer: 5000,
+                                showConfirmButton: true
+                            });
+                        }
+                    });
+                }
             });
         });
     </script>
