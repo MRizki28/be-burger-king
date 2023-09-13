@@ -229,7 +229,6 @@
                                 if (data.message === 'check your validation') {
                                     var error = data.errors;
                                     var errorMessage = "";
-
                                     $.each(error, function(key, value) {
                                         errorMessage += value[0] + "<br>";
                                     });
