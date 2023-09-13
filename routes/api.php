@@ -24,4 +24,6 @@ Route::prefix('v1/jenisproduct')->controller(JenisProductController::class)->gro
     Route::post('/create' , 'createData');
     Route::get('/generateCode' , 'generateProductCode');
     Route::get('/get/{id}' , 'getDataById');
+    Route::post('/update/{id}' , 'updateData');
+    Route::delete('/delete/{id}' , 'deleteData');
 });
