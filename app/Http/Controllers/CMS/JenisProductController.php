@@ -32,4 +32,12 @@ class JenisProductController extends Controller
     {
         return $this->jenisProductRepositories->getDataById($id);
     }
+    public function updateData(Request $request, $id)
+    {
+        return $this->jenisProductRepositories->updateData($request, $id);
+    }
+    public function deleteData($id)
+    {
+        return $this->jenisProductRepositories->deleteData($id);
+    }
 }
