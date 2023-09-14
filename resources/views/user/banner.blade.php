@@ -19,8 +19,7 @@
                 <thead>
                     <tr>
                         <th>No</th>
-                        <th>Kode Produk</th>
-                        <th>Nama Produk</th>
+                        <th>Banner</th>
                         <th>Action</th>
                     </tr>
                 </thead>
@@ -47,19 +46,20 @@
                             @csrf
                             <div class="row py-2">
                                 <div class="col-md-12">
-                                    <div class="form-group fill">
-                                        <input type="hidden" name="id" id="id" value="">
-                                        <label>Kode Jenis Produk</label>
-                                        <input id="kode_product" name="kode_product" type="text" class="form-control"
-                                            placeholder="input here....." autocomplete="off">
-                                        <button type="button" id="generateKodeButton"
-                                            class="btn btn-primary mt-2">Generate</button>
+                                    <div class="text-center">
+                                        <img src="" alt="" id="preview" class="mx-auto d-block pb-2"
+                                            style="max-width: 200px; padding-top: 23px">
                                     </div>
+                                </div>
+                                <div class="col-md-12">
                                     <div class="form-group fill">
                                         <input type="hidden" name="id" id="id" value="">
-                                        <label>Nama Jenis Produk</label>
-                                        <input id="nama_jenis_product" name="nama_jenis_product" type="text"
-                                            class="form-control" placeholder="input here....." autocomplete="off">
+                                        <label for="gambar">Gambar</label>
+                                        <div class="custom-file">
+                                            <input type="file" class="custom-file-input" id="gambar" name="gambar">
+                                            <label class="custom-file-label" for="gambar" id="gambar-label">Upload
+                                                gambar</label>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -75,29 +75,7 @@
     </div>
     <script>
         $(document).ready(function() {
-            $("#generateKodeButton").click(function() {
-                $.ajax({
-                    url: "{{ url('api/v1/jenisproduct/generateCode') }}",
-                    method: 'GET',
-                    success: function(response) {
-                        console.log(response);
-                        $("#kode_product").val(response.generateCode);
-                    },
-                    error: function() {
-                        alert('Gagal mengambil kode otomatis');
-                    }
-                });
-            });
-        });
-
-        $(document).ready(function() {
-            function getDataJenisProduct() {
-
-                // Hancurkan DataTable yang sudah ada jika ada
-                if ($.fn.DataTable.isDataTable("#dataTable")) {
-                    $("#dataTable").DataTable().destroy();
-                }
-
+            function getDataBanner() {
                 var dataTable = $("#dataTable").DataTable({
                     "responsive": true,
                     "lengthChange": false,
@@ -113,8 +91,8 @@
                         $.each(response.data, function(index, item) {
                             tableBody += "<tr>";
                             tableBody += "<td>" + (index + 1) + "</td>";
-                            tableBody += "<td>" + item.kode_product + "</td>";
-                            tableBody += "<td>" + item.nama_jenis_product + "</td>";
+                            tableBody += "<td> <img src='/uploads/news/" + item.gambar +
+                                "' style='width:100px;height:100px;'> </td>";
                             tableBody += "<td>" +
                                 "<button type='button' class='btn btn-primary edit-modal' data-toggle='modal' data-target='#EditModal' " +
                                 "data-id='" + item.id + "'>" +
@@ -124,10 +102,8 @@
                                 "</td>";
                             tableBody += "</tr>";
                         });
-                       
-                        dataTable.clear().rows.add($(tableBody)).draw();
-
-
+                     
+                        table.rows.add($(tableBody)).draw();
 
                     },
                     error: function() {
@@ -135,7 +111,7 @@
                     }
                 });
             }
-            getDataJenisProduct();
+            getDataBanner();
 
             $.ajaxSetup({
                 headers: {
@@ -201,8 +177,7 @@
                                         showCancelButton: false,
                                         confirmButtonText: 'OK'
                                     }).then(function() {
-                                        $('#JenisProductModal').modal('hide'); 
-                                        getDataJenisProduct();
+                                        getDataBanner();
                                     });
                                 }
                             },
@@ -259,8 +234,7 @@
                                         showCancelButton: false,
                                         confirmButtonText: 'OK'
                                     }).then(function() {
-                                        $('#JenisProductModal').modal('hide'); 
-                                        getDataJenisProduct();
+                                       getDataBanner();
                                     });
                                 }
                             },

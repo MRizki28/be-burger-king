@@ -1,6 +1,8 @@
 <?php
 
+use App\Http\Controllers\CMS\BannerController;
 use App\Http\Controllers\CMS\JenisProductController;
+use App\Http\Controllers\CMS\MenuController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -27,3 +29,19 @@ Route::prefix('v1/jenisproduct')->controller(JenisProductController::class)->gro
     Route::post('/update/{id}' , 'updateData');
     Route::delete('/delete/{id}' , 'deleteData');
 });
+
+Route::prefix('v2/menu')->controller(MenuController::class)->group(function () {
+    Route::get('/' , 'getAllData');
+    Route::post('/create' , 'createData');
+    Route::get('/generateCode' , 'generateProductCode');
+    Route::get('/get/{id}' , 'getDataById');
+    Route::post('/update/{id}' , 'updateData');
+    Route::delete('/delete/{id}' , 'deleteData');
+});
+
+Route::prefix('v3/banner')->controller(BannerController::class)->group(function () {
+    Route::get('/gambar' , 'getAllGambar');
+    Route::post('/create' , 'createData');
+ 
+});
+

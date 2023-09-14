@@ -20,3 +20,7 @@ Route::get('/', function () {
 Route::get('/jenisProduct', function () {
     return view('user.jenisProduct');
 });
+
+Route::get('/banner', function () {
+    return view('user.banner');
+});
