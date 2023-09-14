@@ -124,7 +124,7 @@
                                 "</td>";
                             tableBody += "</tr>";
                         });
-                       
+
                         dataTable.clear().rows.add($(tableBody)).draw();
 
 
@@ -155,6 +155,7 @@
                     } else {
                         $('.modal-title').text('Tambah Data');
                         $('.modal-footer button[type="submit"]').text('Submit');
+                        $('#generateKodeButton').show();
                     }
                     $('#JenisProductModal').modal('show');
                 }
@@ -201,7 +202,7 @@
                                         showCancelButton: false,
                                         confirmButtonText: 'OK'
                                     }).then(function() {
-                                        $('#JenisProductModal').modal('hide'); 
+                                        $('#JenisProductModal').modal('hide');
                                         getDataJenisProduct();
                                     });
                                 }
@@ -234,6 +235,7 @@
                             contentType: false,
                             processData: false,
                             success: function(data) {
+                               
                                 $('#loading-overlay').hide();
                                 if (data.message === 'check your validation') {
                                     var error = data.errors;
@@ -241,7 +243,6 @@
                                     $.each(error, function(key, value) {
                                         errorMessage += value[0] + "<br>";
                                     });
-
                                     Swal.fire({
                                         title: 'Error',
                                         html: errorMessage,
@@ -250,6 +251,7 @@
                                         showConfirmButton: true
                                     });
                                 } else {
+                                    resetModal()
                                     console.log(data);
                                     $('#loading-overlay').hide();
                                     Swal.fire({
@@ -259,7 +261,7 @@
                                         showCancelButton: false,
                                         confirmButtonText: 'OK'
                                     }).then(function() {
-                                        $('#JenisProductModal').modal('hide'); 
+                                        $('#JenisProductModal').modal('hide');
                                         getDataJenisProduct();
                                     });
                                 }
@@ -310,16 +312,19 @@
                     $('#id').val('');
                     $('#kode_product').val('');
                     $('#nama_jenis_product').val('');
-
                 }
 
-                // Fungsi reset modal
+                // Fungsi reset modal ketika modal ditutup
                 $('#JenisProductModal').on('hidden.bs.modal', function() {
+                    if (isEditMode) {
+                        resetModal();
+                    }
                     isEditMode = false;
-                    resetModal();
+                    $('#generateKodeButton').show();
                     $('.modal-title').text('Tambah Data');
                     $('.modal-footer button[type="submit"]').text('Submit');
                 });
+
             });
         });
 

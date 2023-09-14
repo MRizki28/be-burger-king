@@ -19,7 +19,7 @@ class JenisProductRepositories implements JenisProductInterfaces
 
     public function getAllData()
     {
-        $data = JenisProductModel::all();
+        $data = $this->jenisProductModel::all();
         if ($data->isEmpty()) {
             return response()->json([
                 'message' => 'Data not found'
