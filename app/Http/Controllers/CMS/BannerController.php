@@ -35,4 +35,8 @@ class BannerController extends Controller
     {
         return $this->bannerRepositories->updateData($request, $id);
     }
+    public function deleteData($id)
+    {
+        return $this->bannerRepositories->deleteData($id);
+    }
 }
