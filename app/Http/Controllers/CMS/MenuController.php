@@ -19,4 +19,8 @@ class MenuController extends Controller
     {
         return $this->menuRepositories->getAllData();
     }
+    public function createData(Request $request)
+    {
+        return $this->menuRepositories->createData($request);
+    }
 }
