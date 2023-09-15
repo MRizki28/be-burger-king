@@ -161,9 +161,27 @@ class BannerRepositories implements BannerInterfaces
 
     public function deleteData($id)
     {
-        $data = $this->bannerModel::where('id', $id)->first();
-        if (!$data) {
-            return response()->json([]);
+        try {
+            $data = $this->bannerModel::where('id', $id)->first();
+            if (!$data) {
+                return response()->json([
+                    'message' => 'data not found'
+                ], 404);
+            }
+            $filePath = 'uploads/banner/' . $data->gambar_banner;
+            if (File::exists($filePath)) {
+                File::delete($filePath);
+            }
+            $data->delete();
+        } catch (\Throwable $th) {
+            return response()->json([
+                'message' => 'failed',
+                'errors' => $th->getMessage()
+            ]);
         }
+
+        return response()->json([
+            'message' => 'success delete data'
+        ], 200);
     }
 }
