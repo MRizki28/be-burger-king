@@ -8,8 +8,8 @@
     <div class="card">
         <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
             <h6 class="m-0 font-weight-bold ">Data Jenis Produk</h6>
-            <button type="button" class="btn btn-outline-primary ml-auto" data-toggle="modal"
-                data-target="#JenisProductModal" id="#myBtn">
+            <button type="button" class="btn btn-outline-primary ml-auto" data-toggle="modal" data-target="#BannerModal"
+                id="#myBtn">
                 Tambah Data
             </button>
         </div>
@@ -31,7 +31,7 @@
         <!-- /.card-body -->
 
         {{-- modal updert data --}}
-        <div class="modal fade" id="JenisProductModal" tabindex="-1" role="dialog" aria-labelledby="JenisProductLabel"
+        <div class="modal fade" id="BannerModal" tabindex="-1" role="dialog" aria-labelledby="JenisProductLabel"
             aria-hidden="true">
             <div class="modal-dialog" role="document">
                 <div class="modal-content">
@@ -56,7 +56,8 @@
                                         <input type="hidden" name="id" id="id" value="">
                                         <label for="gambar">Gambar</label>
                                         <div class="custom-file">
-                                            <input type="file" class="custom-file-input" id="gambar" name="gambar">
+                                            <input type="file" class="custom-file-input" id="gambar_banner"
+                                                name="gambar_banner">
                                             <label class="custom-file-label" for="gambar" id="gambar-label">Upload
                                                 gambar</label>
                                         </div>
@@ -73,16 +74,23 @@
             </div>
         </div>
     </div>
+
+
     <script>
         $(document).ready(function() {
             function getDataBanner() {
+
+                if ($.fn.DataTable.isDataTable("#dataTable")) {
+                    $("#dataTable").DataTable().destroy();
+                }
+
                 var dataTable = $("#dataTable").DataTable({
                     "responsive": true,
                     "lengthChange": false,
                     "autoWidth": false,
                 });
                 $.ajax({
-                    url: "{{ url('api/v1/jenisproduct/') }}",
+                    url: "{{ url('api/v3/banner') }}",
                     method: "GET",
                     dataType: "json",
                     success: function(response) {
@@ -91,8 +99,9 @@
                         $.each(response.data, function(index, item) {
                             tableBody += "<tr>";
                             tableBody += "<td>" + (index + 1) + "</td>";
-                            tableBody += "<td> <img src='/uploads/news/" + item.gambar +
-                                "' style='width:100px;height:100px;'> </td>";
+                            tableBody += "<td> <img src='/uploads/banner/" + item
+                                .gambar_banner +
+                                "' style='width:10%;height:10%;  '> </td>";
                             tableBody += "<td>" +
                                 "<button type='button' class='btn btn-primary edit-modal' data-toggle='modal' data-target='#EditModal' " +
                                 "data-id='" + item.id + "'>" +
@@ -102,8 +111,8 @@
                                 "</td>";
                             tableBody += "</tr>";
                         });
-                     
-                        table.rows.add($(tableBody)).draw();
+
+                        dataTable.clear().rows.add($(tableBody)).draw();
 
                     },
                     error: function() {
@@ -112,6 +121,35 @@
                 });
             }
             getDataBanner();
+
+            $(document).ready(function() {
+                $(document).on('change', '#gambar_banner', function() {
+                    var fileName = $(this).val().split('\\').pop();
+                    $('#gambar-label').text(fileName);
+                });
+            });
+
+
+            $(document).ready(function() {
+                $('#gambar_banner').change(function() {
+                    var fileInput = $(this)[0];
+                    var imagePreview = $('#preview');
+                    var file = fileInput.files[0];
+
+                    if (file) {
+                        var reader = new FileReader();
+
+                        reader.onload = function(e) {
+                            imagePreview.attr('src', e.target.result);
+                            imagePreview.show();
+                        };
+
+                        reader.readAsDataURL(file);
+                    } else {
+                        imagePreview.hide();
+                    }
+                });
+            });
 
             $.ajaxSetup({
                 headers: {
@@ -127,23 +165,29 @@
                     if (isEditMode) {
                         $('.modal-title').text('Edit Data');
                         $('.modal-footer button[type="submit"]').text('Update');
-                        $('#generateKodeButton').hide();
+                        $('#preview').show()
                     } else {
                         $('.modal-title').text('Tambah Data');
                         $('.modal-footer button[type="submit"]').text('Submit');
+                        $('#preview').hide()
                     }
-                    $('#JenisProductModal').modal('show');
+                    $('#BannerModal').modal('show');
                 }
 
                 $('#formTambah').submit(function(e) {
                     e.preventDefault();
-                    var formData = new FormData(this);
+                    let formData = new FormData(this);
+
                     if (isEditMode) {
-                        var id = $('#id').val();
+                        let id = $('#id').val();
+                        let file = $('#gambar_banner')[0].files[0];
+                        if (!file) {
+                            formData.delete('gambar_banner');
+                        }
                         $('#loading-overlay').show();
                         $.ajax({
                             type: "POST",
-                            url: "{{ url('api/v1/jenisproduct/update/') }}/" +
+                            url: "{{ url('api/v3/banner/update/') }}/" +
                                 id,
                             data: formData,
                             dataType: 'json',
@@ -177,6 +221,7 @@
                                         showCancelButton: false,
                                         confirmButtonText: 'OK'
                                     }).then(function() {
+                                        $('#BannerModal').modal('hide');
                                         getDataBanner();
                                     });
                                 }
@@ -203,7 +248,7 @@
                         $('#loading-overlay').show();
                         $.ajax({
                             type: 'POST',
-                            url: '{{ url('api/v1/jenisproduct/create') }}',
+                            url: '{{ url('api/v3/banner/create') }}',
                             data: formData,
                             dataType: 'JSON',
                             contentType: false,
@@ -234,7 +279,8 @@
                                         showCancelButton: false,
                                         confirmButtonText: 'OK'
                                     }).then(function() {
-                                       getDataBanner();
+                                        $('#BannerModal').modal('hide');
+                                        getDataBanner();
                                     });
                                 }
                             },
@@ -261,9 +307,13 @@
                 });
 
                 $(document).on('click', '.edit-modal', function() {
-                    var id = $(this).data('id');
+                    let id = $(this).data('id');
+                    $(document).on('change', '#gambar', function() {
+                        let fileName = $(this).val().split('\\').pop();
+                        $('#gambar-label').text(fileName);
+                    });
                     $.ajax({
-                        url: "{{ url('api/v1/jenisproduct/get') }}/" +
+                        url: "{{ url('api/v3/banner/get') }}/" +
                             id,
                         type: 'GET',
                         dataType: 'JSON',
@@ -271,8 +321,13 @@
                             console.log(data);
                             showModal(true);
                             $('#id').val(data.data.id);
-                            $('#kode_product').val(data.data.kode_product);
-                            $('#nama_jenis_product').val(data.data.nama_jenis_product);
+                            $('#gambar_menu').html(data.data.gambar_banner)
+                            $('#preview').attr('src',
+                                "{{ asset('uploads/banner') }}/" +
+                                data.data
+                                .gambar_banner);
+                            let fileName = data.data.gambar_banner.split('/').pop();
+                            $('#gambar-label').text(fileName);
                         },
                         error: function() {
                             alert("error");
@@ -282,15 +337,17 @@
 
                 function resetModal() {
                     $('#id').val('');
-                    $('#kode_product').val('');
-                    $('#nama_jenis_product').val('');
-
+                    $('#gambar_banner').val('');
+                    $('#preview').attr('src', '').hide();
+                    $('#gambar-label').text('Image');
                 }
 
                 // Fungsi reset modal
-                $('#JenisProductModal').on('hidden.bs.modal', function() {
+                $('#BannerModal').on('hidden.bs.modal', function() {
+                    if (isEditMode) {
+                        resetModal();
+                    }
                     isEditMode = false;
-                    resetModal();
                     $('.modal-title').text('Tambah Data');
                     $('.modal-footer button[type="submit"]').text('Submit');
                 });
