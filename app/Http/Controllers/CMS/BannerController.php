@@ -23,4 +23,16 @@ class BannerController extends Controller
     {
         return $this->bannerRepositories->getAllGambar();
     }
+    public function getAllData()
+    {
+        return $this->bannerRepositories->getAllData();
+    }
+    public function getDataById($id)
+    {
+        return $this->bannerRepositories->getDataById($id);
+    }
+    public function updateData(Request $request, $id)
+    {
+        return $this->bannerRepositories->updateData($request, $id);
+    }
 }
