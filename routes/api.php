@@ -45,6 +45,6 @@ Route::prefix('v3/banner')->controller(BannerController::class)->group(function 
     Route::post('/create' , 'createData');
     Route::get('/get/{id}' , 'getDataById');
     Route::post('update/{id}' , 'updateData');
- 
+    Route::delete('/delete/{id}' , 'deleteData');
 });
 
