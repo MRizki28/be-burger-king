@@ -88,4 +88,82 @@ class BannerRepositories implements BannerInterfaces
             ], 404);
         }
     }
+    public function getAllData()
+    {
+        $data = $this->bannerModel::all();
+        if ($data->isEmpty()) {
+            return response()->json([
+                'message' => 'Data not found'
+            ], 404);
+        } else {
+            return response()->json([
+                'message' => 'success get all data',
+                'data' => $data
+            ], 200);
+        }
+    }
+
+    public function getDataById($id)
+    {
+        $data = $this->bannerModel::where('id', $id)->first();
+        if (!$data) {
+            return response()->json([
+                'message' => 'ID or data not found'
+            ], 404);
+        } else {
+            return response()->json([
+                'message' => 'success get data by id',
+                'data' => $data
+            ], 200);
+        }
+    }
+
+    public function updateData(Request $request, $id)
+    {
+        $data = $request->all();
+
+        $validation = [
+            'gambar_banner' => 'image'
+        ];
+
+        $customMessage = [
+            'gambar_banner.image' => 'Format tidak valid'
+        ];
+
+        $this->dataValidation($data, $validation, $customMessage);
+        try {
+            $data = $this->bannerModel::where('id', $id)->first();
+            if ($request->hasFile('gambar_banner')) {
+                $file = $request->file('gambar_banner');
+                $extention = $file->getClientOriginalExtension();
+                $filename = 'BANNER-' . Str::random(15) . '.' . $extention;
+                Storage::makeDirectory('uploads/banner/');
+                $file->move(public_path('uploads/banner/'), $filename);
+                $old_file =  public_path('uploads/banner/') . $data->gambar_banner;
+                if (file_exists($old_file)) {
+                    unlink($old_file);
+                }
+                $data->gambar_banner = $filename;
+            }
+            $data->save();
+        } catch (\Throwable $th) {
+            return response()->json([
+                'message' => 'failed',
+                'errors' => $th->getMessage()
+            ], 400);
+        }
+
+        return response()->json([
+            'message' => 'success update data',
+            'data' => $data
+        ], 200);
+    }
+
+    public function deleteData($id)
+    {
+        $data = $this->bannerModel::where('id', $id)->first();
+        if (!$data) {
+            return response()->json([]);
+        }
+    }
 }
