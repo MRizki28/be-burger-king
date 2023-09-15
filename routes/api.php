@@ -40,8 +40,11 @@ Route::prefix('v2/menu')->controller(MenuController::class)->group(function () {
 });
 
 Route::prefix('v3/banner')->controller(BannerController::class)->group(function () {
+    Route::get('/' , 'getAllData');
     Route::get('/gambar' , 'getAllGambar');
     Route::post('/create' , 'createData');
+    Route::get('/get/{id}' , 'getDataById');
+    Route::post('update/{id}' , 'updateData');
  
 });
 
