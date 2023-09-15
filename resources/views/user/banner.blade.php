@@ -7,7 +7,7 @@
     </div>
     <div class="card">
         <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-            <h6 class="m-0 font-weight-bold ">Data Jenis Produk</h6>
+            <h6 class="m-0 font-weight-bold ">Data Banner</h6>
             <button type="button" class="btn btn-outline-primary ml-auto" data-toggle="modal" data-target="#BannerModal"
                 id="#myBtn">
                 Tambah Data
@@ -369,7 +369,7 @@
             }).then((result) => {
                 if (result.isConfirmed) {
                     $.ajax({
-                        url: `{{ url('api/v1/jenisproduct/delete') }}/` +
+                        url: `{{ url('api/v3/banner/delete') }}/` +
                             id,
                         type: 'DELETE',
                         data: {
