@@ -98,7 +98,7 @@
                     $("#dataTable").DataTable().destroy();
                 }
 
-                var dataTable = $("#dataTable").DataTable({
+                let dataTable = $("#dataTable").DataTable({
                     "responsive": true,
                     "lengthChange": false,
                     "autoWidth": false,
@@ -109,7 +109,7 @@
                     dataType: "json",
                     success: function(response) {
                         console.log(response);
-                        var tableBody = "";
+                        let tableBody = "";
                         $.each(response.data, function(index, item) {
                             tableBody += "<tr>";
                             tableBody += "<td>" + (index + 1) + "</td>";
@@ -144,7 +144,7 @@
             });
 
             $(document).ready(function() {
-                var isEditMode = false;
+                let isEditMode = false;
 
                 function showModal(editMode = false, id = '') {
                     isEditMode = editMode;
@@ -162,9 +162,9 @@
 
                 $('#formTambah').submit(function(e) {
                     e.preventDefault();
-                    var formData = new FormData(this);
+                    let formData = new FormData(this);
                     if (isEditMode) {
-                        var id = $('#id').val();
+                        let id = $('#id').val();
                         $('#loading-overlay').show();
                         $.ajax({
                             type: "POST",
@@ -178,8 +178,8 @@
                                 console.log(data);
                                 $('#loading-overlay').hide();
                                 if (data.message === 'check your validation') {
-                                    var error = data.errors;
-                                    var errorMessage = "";
+                                    let error = data.errors;
+                                    let errorMessage = "";
 
                                     $.each(error, function(key, value) {
                                         errorMessage += value[0] + "<br>";
@@ -200,7 +200,7 @@
                                         text: 'Data Success Update',
                                         icon: 'success',
                                         showCancelButton: false,
-                                        confirmButtonText: 'OK'
+                                        showConfirmButton: true
                                     }).then(function() {
                                         $('#JenisProductModal').modal('hide');
                                         getDataJenisProduct();
@@ -209,8 +209,8 @@
                             },
                             error: function(data) {
                                 $('#loading-overlay').hide();
-                                var errors = data.responseJSON.errors;
-                                var errorMessage = "";
+                                let errors = data.responseJSON.errors;
+                                let errorMessage = "";
 
                                 $.each(errors, function(key, value) {
                                     errorMessage += value + "<br>";
@@ -235,11 +235,11 @@
                             contentType: false,
                             processData: false,
                             success: function(data) {
-                               
+
                                 $('#loading-overlay').hide();
                                 if (data.message === 'check your validation') {
-                                    var error = data.errors;
-                                    var errorMessage = "";
+                                    let error = data.errors;
+                                    let errorMessage = "";
                                     $.each(error, function(key, value) {
                                         errorMessage += value[0] + "<br>";
                                     });
@@ -259,7 +259,7 @@
                                         text: 'Data Success Create',
                                         icon: 'success',
                                         showCancelButton: false,
-                                        confirmButtonText: 'OK'
+                                        showConfirmButton: true
                                     }).then(function() {
                                         $('#JenisProductModal').modal('hide');
                                         getDataJenisProduct();
@@ -269,8 +269,8 @@
                             error: function(data) {
                                 $('#loading-overlay').hide();
 
-                                var error = data.responseJSON.errors;
-                                var errorMessage = "";
+                                let error = data.responseJSON.errors;
+                                let errorMessage = "";
 
                                 $.each(error, function(key, value) {
                                     errorMessage += value[0] + "<br>";
@@ -289,7 +289,7 @@
                 });
 
                 $(document).on('click', '.edit-modal', function() {
-                    var id = $(this).data('id');
+                    let id = $(this).data('id');
                     $.ajax({
                         url: "{{ url('api/v1/jenisproduct/get') }}/" +
                             id,
@@ -326,61 +326,67 @@
                 });
 
             });
-        });
+          
+            //delete
+            $(document).on('click', '.delete-confirm', function(e) {
+                e.preventDefault();
+                let id = $(this).data('id');
+                Swal.fire({
+                    title: 'Anda yakin ingin menghapus data ini?',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonText: 'Ya, Delete',
+                    cancelButtonText: 'Cancel',
+                    resolveButton: true
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        $.ajax({
+                            url: `{{ url('api/v1/jenisproduct/delete') }}/` + id,
+                            type: 'DELETE',
+                            data: {
+                                "_token": "{{ csrf_token() }}",
+                                "id": id
+                            },
+                            success: function(response) {
+                                if (response.message === 'success delete data') {
+                 
+                                    let dataTable = $("#dataTable").DataTable();
+                                    let rowCount = dataTable.rows().count();
 
+                                    if (rowCount === 1) {
+                                        dataTable.rows().remove().draw();
+                                    } else {
+                                        getDataJenisProduct();
+                                    }
 
-        //delete
-        $(document).on('click', '.delete-confirm', function(e) {
-            e.preventDefault();
-            var id = $(this).data('id');
-            Swal.fire({
-                title: 'Anda yakin ingin menghapus data ini?',
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonText: 'Ya, Delete',
-                cancelButtonText: 'Cancel',
-                resolveButton: true
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    $.ajax({
-                        url: `{{ url('api/v1/jenisproduct/delete') }}/` +
-                            id,
-                        type: 'DELETE',
-                        data: {
-                            "_token": "{{ csrf_token() }}",
-                            "id": id
-                        },
-                        success: function(response) {
-                            if (response.message === 'success delete data') {
+                                    Swal.fire({
+                                        title: 'Data berhasil dihapus',
+                                        icon: 'success',
+                                        timer: 5000,
+                                        showConfirmButton: true
+                                    });
+                                } else {
+                                    Swal.fire({
+                                        title: 'Gagal menghapus data',
+                                        text: response.message,
+                                        icon: 'error',
+                                        timer: 5000,
+                                        showConfirmButton: true
+                                    });
+                                }
+                            },
+                            error: function() {
                                 Swal.fire({
-                                    title: 'Data berhasil dihapus',
-                                    icon: 'success',
-                                    timer: 5000,
-                                    showConfirmButton: true
-                                }).then((result) => {
-                                    location.reload();
-                                });
-                            } else {
-                                Swal.fire({
-                                    title: 'Gagal menghapus data',
-                                    text: response.message,
+                                    title: 'Terjadi kesalahan',
+                                    text: 'Gagal menghapus data',
                                     icon: 'error',
                                     timer: 5000,
                                     showConfirmButton: true
                                 });
                             }
-                        },
-                        error: function() {
-                            Swal.fire({
-                                title: 'Terjadi kesalahan',
-                                text: 'Gagal menghapus data',
-                                icon: 'error',
-                                timer: 5000,
-                                showConfirmButton: true
-                            });
-                        }
-                    });
-                }
+                        });
+                    }
+                });
             });
         });
     </script>
