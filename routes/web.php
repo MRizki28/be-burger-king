@@ -24,3 +24,7 @@ Route::get('/jenisProduct', function () {
 Route::get('/banner', function () {
     return view('user.banner');
 });
+
+Route::get('/menu' , function() {
+    return view('user.menu');
+});
